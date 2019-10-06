@@ -30,11 +30,18 @@ function displayStore(){
   connection.end();
 }
 
-function displayPrice(){
+function displayPrice(quantity,id,boughtNum){
   // grab the princing info
+  connection.query("SELECT * FROM products WHERE item_id=?", [id], function(error,response){
+    if (error) throw error;
+      console.log(`You spent $${response[0].price*boughtNum}!`);
+      console.log(response[0].price);
+      console.log(quantity);
+  })
+  connection.end();
 }
 
-function updateStock(quantity,id) {
+function updateStock(quantity,id,boughtNum) {
   if (quantity === 0) {
     removeProduct(id);
   }
@@ -52,7 +59,7 @@ function updateStock(quantity,id) {
       if (err) throw err;
       // need to query read the database in order to print the below//
       //console.log(`You spent $${res[id-1].price*parseFloat(quantity)}!`);
-      displayStore();
+      displayPrice(quantity,id,boughtNum);
     }
   );
   }
@@ -92,7 +99,7 @@ function customerBuys() {
       if (remaining >= 0) {
         console.log(res[0].item_id);
         console.log(typeof res[0].item_id);
-        updateStock(remaining,res[0].item_id);
+        updateStock(remaining,res[0].item_id,parseFloat(ans.howMany));
       } else {
         console.log(`We're sorry, there is not enough of ${res[0].product_name} in stock to purchase that many.`);
         connection.end();
