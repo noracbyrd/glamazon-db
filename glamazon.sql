@@ -20,4 +20,6 @@ VALUES ("Enchanted","Movies",19.99,50),
         ("Mad Dash","Video Games",19.99,15),
         ("Skyrim","Video Games",49.99,47),
         ("Legend of Zelda: Breath of the Wild","Video Games",59.99,187),
-        ("Midnight Circus","Books",14.49,73);
+        ("Midnight Circus","Books",14.49,2);
+        
+SELECT * FROM products;
