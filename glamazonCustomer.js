@@ -48,6 +48,11 @@ function customerBuys() {
     // probably need to convert the answers into integers
     connection.query("SELECT * FROM products WHERE item_id=?", [parseInt(ans.selectID)], function(error,res){
       if (error) throw error;
+      if (res[0].stock_quantity - ans.howMany >= 0) {
+
+      } else {
+        console.log(`We're sorry, there is not enough of ${res[0].product_name} in stock to purchase that many.`);
+      }
       console.log(res);
     });
     // if statement: if there's enough stock-
