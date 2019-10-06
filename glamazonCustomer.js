@@ -2,7 +2,7 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 
-// establishing a connections to the database
+// establishing a connection to the database
 var connection = mysql.createConnection({
   host: "localhost",
 
@@ -17,7 +17,7 @@ var connection = mysql.createConnection({
   database: "glamazon"
 });
 
-// function to display the items available for purchase
+// function to display the items available for purchase:
 function displayStore(){
   connection.query("SELECT * FROM products", function(error,response){
     if (error) throw error;
@@ -27,25 +27,28 @@ function displayStore(){
       console.log(`ID: ${response[i].item_id} \t Product Name: ${response[i].product_name}; Price: $${response[i].price}`);
     }
   })
-  connection.end();
+  // connection.end();
 }
 
-function displayPrice(quantity,id,boughtNum){
-  // grab the princing info
+// function to display how much the user spent (to be called only after a purchase goes through):
+// accepts two arguments: the item's unique id (id) and the number of that item purchased (boughtNum)
+function displayPrice(id,boughtNum){
   connection.query("SELECT * FROM products WHERE item_id=?", [id], function(error,response){
     if (error) throw error;
       console.log(`You spent $${response[0].price*boughtNum}!`);
-      console.log(response[0].price);
-      console.log(quantity);
   })
   connection.end();
 }
 
+// function to update the stock after the user successfully purshases items:
+// accepts three arguments: the number of items currently in stock (quantity), the item's unique id (id), and the number of that item purchased (boughtNum)
 function updateStock(quantity,id,boughtNum) {
   if (quantity === 0) {
+      // if the item is out of stock, call the removeProduct function to delete the listing
     removeProduct(id);
   }
   else {
+    // query to update the stock with the new total number (which is actually calculated in the customerBuys function below)
   connection.query("UPDATE products SET ? WHERE ?",
     [
       {
@@ -57,26 +60,28 @@ function updateStock(quantity,id,boughtNum) {
     ],
     function(err, res) {
       if (err) throw err;
-      // need to query read the database in order to print the below//
-      //console.log(`You spent $${res[id-1].price*parseFloat(quantity)}!`);
-      displayPrice(quantity,id,boughtNum);
+      // calls the display cost function to show the user how much they spent
+      displayPrice(id,boughtNum);
     }
   );
   }
 }
 
+// function to delete an item that is out of stock:
+// takes one argument, the item id
 function removeProduct(id) {
   console.log(id);
   connection.query(
     "DELETE FROM products WHERE item_id=?", [id], function(err, res) {
       if (err) throw err;
-      // Call readProducts AFTER the DELETE completes - leaving this here in case i need to deal with it
+      // show the updated contents of the store
       displayStore();
     }
   );
+  connection.end();
 }
 
-// function that allows customer to purchase items
+// function that allows customer to purchase items:
 function customerBuys() {
   inquirer
   .prompt([
@@ -91,41 +96,32 @@ function customerBuys() {
       // again, need to validate that they entered a number
     }
   ]).then(function(ans){
-    // probably need to convert the answers into integers
     connection.query("SELECT * FROM products WHERE item_id=?", [parseInt(ans.selectID)], function(error,res){
       if (error) throw error;
-      console.log(res[0]);
+      // variable to store how many items would be left if the customer were to purchase the number they want:
       var remaining = res[0].stock_quantity - parseInt(ans.howMany);
-      console.log(remaining);
+      // if there are enough items in stock to accomodate the number the user wants to buy:
       if (remaining >= 0) {
-        console.log(res[0].item_id);
-        console.log(typeof res[0].item_id);
+        // call the updateStock function with the item's id and how many the user wants to buy (grabbed from Inquirer)
         updateStock(remaining,res[0].item_id,parseFloat(ans.howMany));
       } else {
         console.log(`We're sorry, there is not enough of ${res[0].product_name} in stock to purchase that many.`);
         connection.end();
       }
-
     });
-    // if statement: if there's enough stock-
-    // update the database, console log the price of the purchase
-    // else say 'not enough stock, sorry"
-
   }).catch(function(err){
     console.log(err);
   })
-
 }
 
-
-
-// function to establish the database connection
+// function to establish the database connection:
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
-  // displayStore();
+  // call displayStore to show user what products are available
+  displayStore();
+  // call customerBuys to kick off the path to purchase
   customerBuys();
-
 });
 
 
