@@ -124,4 +124,5 @@ connection.connect(function(err) {
   customerBuys();
 });
 
+// portfolio link: https://noracbyrd.github.io/Bootstrap_Portfolio/
 
