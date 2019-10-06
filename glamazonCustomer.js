@@ -18,7 +18,7 @@ var connection = mysql.createConnection({
 });
 
 // function to display the items available for purchase
-function displayItems(){
+function displayStore(){
   connection.query("SELECT * FROM products", function(error,response){
     if (error) throw error;
     // displaying everything all nice and friendly like
@@ -28,6 +28,44 @@ function displayItems(){
     }
   })
   connection.end();
+}
+
+function displayPrice(){
+  // grab the princing info
+}
+
+function updateStock(quantity,id) {
+  if (quantity === 0) {
+    removeProduct(id);
+  }
+  else {
+  connection.query("UPDATE products SET ? WHERE ?",
+    [
+      {
+        stock_quantity: quantity
+      },
+      {
+        item_id: id
+      }
+    ],
+    function(err, res) {
+      if (err) throw err;
+      // need to query read the database in order to print the below//
+      //console.log(`You spent $${res[id-1].price*parseFloat(quantity)}!`);
+      displayStore();
+    }
+  );
+  }
+}
+
+function removeProduct(id) {
+  connection.query(
+    "DELETE FROM products WHERE id=?", [id], function(err, res) {
+      if (err) throw err;
+      // Call readProducts AFTER the DELETE completes - leaving this here in case i need to deal with it
+      displayStore();
+    }
+  );
 }
 
 // function that allows customer to purchase items
@@ -48,17 +86,23 @@ function customerBuys() {
     // probably need to convert the answers into integers
     connection.query("SELECT * FROM products WHERE item_id=?", [parseInt(ans.selectID)], function(error,res){
       if (error) throw error;
-      if (res[0].stock_quantity - ans.howMany >= 0) {
-
+      console.log(res[0]);
+      var remaining = res[0].stock_quantity - parseInt(ans.howMany);
+      console.log(remaining);
+      if (remaining >= 0) {
+        console.log(res[0].item_id);
+        console.log(typeof res[0].item_id);
+        updateStock(remaining,res[0].item_id);
       } else {
         console.log(`We're sorry, there is not enough of ${res[0].product_name} in stock to purchase that many.`);
+        connection.end();
       }
-      console.log(res);
+
     });
     // if statement: if there's enough stock-
     // update the database, console log the price of the purchase
     // else say 'not enough stock, sorry"
-    connection.end();
+
   }).catch(function(err){
     console.log(err);
   })
@@ -71,7 +115,7 @@ function customerBuys() {
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
-  // displayItems();
+  // displayStore();
   customerBuys();
 
 });
