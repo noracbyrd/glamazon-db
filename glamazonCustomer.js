@@ -27,6 +27,7 @@ function displayItems(){
       console.log(`ID: ${response[i].item_id} \t Product Name: ${response[i].product_name}; Price: $${response[i].price}`);
     }
   })
+  connection.end();
 }
 
 // function that allows customer to purchase items
@@ -45,18 +46,29 @@ function customerBuys() {
     }
   ]).then(function(ans){
     // probably need to convert the answers into integers
+    connection.query("SELECT * FROM products WHERE item_id=?", [parseInt(ans.selectID)], function(error,res){
+      if (error) throw error;
+      console.log(res);
+    });
     // if statement: if there's enough stock-
     // update the database, console log the price of the purchase
     // else say 'not enough stock, sorry"
-  }).catch(err,function(){})
+    connection.end();
+  }).catch(function(err){
+    console.log(err);
+  })
+
 }
+
+
 
 // function to establish the database connection
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
-  displayItems();
+  // displayItems();
   customerBuys();
-  connection.end();
+
 });
+
 
