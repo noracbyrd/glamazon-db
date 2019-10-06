@@ -66,8 +66,9 @@ function updateStock(quantity,id,boughtNum) {
 }
 
 function removeProduct(id) {
+  console.log(id);
   connection.query(
-    "DELETE FROM products WHERE id=?", [id], function(err, res) {
+    "DELETE FROM products WHERE item_id=?", [id], function(err, res) {
       if (err) throw err;
       // Call readProducts AFTER the DELETE completes - leaving this here in case i need to deal with it
       displayStore();
