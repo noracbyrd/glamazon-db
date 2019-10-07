@@ -40,24 +40,90 @@ function viewLow() {
             if (response[i].stock_quantity < 5) {
                 console.log(`ID: ${response[i].item_id} \t Product Name: ${response[i].product_name}; Price: $${response[i].price} \t In Stock: ${response[i].stock_quantity}`);
                 tracker++;
-            } 
+            }
         }
-        if (tracker === 0){
+        if (tracker === 0) {
             console.log("No low inventory!");
         }
     })
     connection.end();
 }
 
-// don't forget to close connection!
+
+//don't forget to close connection!
 function addInventory() {
-
+    inquirer
+        .prompt([
+            {
+                message: "What is the ID of the item you'd like to add inventory to?",
+                name: "itemID"
+                // validation, eurgh
+            },
+            {
+                message: "How many would you like to add?",
+                name: "howMany"
+                // validation, ugh
+            }
+        ]).then(function (ans) {
+            connection.query("UPDATE products SET ? WHERE ?",
+            [
+                {
+                    stock_quantity: parseInt(ans.howMany)
+                },
+                {
+                    item_id: parseInt(ans.itemID) 
+                }
+            ],
+                function(error,res){
+                if (error) throw error;
+                    console.log("Stock added!");
+            }) 
+            viewProducts();
+        }).catch(function(error){
+            console.log(error);
+         })
 }
 
-// don't forget to close connection!
+
 function addProduct() {
-
+    inquirer
+        .prompt([
+            {
+                message: "What item would you like to add?",
+                name: "newItem"
+            },
+            {
+                message: "In what department should the product be placed?",
+                name: "itemDept"
+            },
+            {
+                message: "How much does the item cost?",
+                name: "itemPrice"
+                // need a bloody validation
+            },
+            {
+                message: "How many of this item are in stock?",
+                name: "itemsInStock"
+                // need bloody validation
+            }
+        ]).then(function (ans) {
+            connection.query("INSERT INTO products SET ?",
+                {
+                    product_name: ans.newItem,
+                    department_name: ans.itemDept,
+                    price: parseFloat(ans.itemPrice),
+                    stock_quantity: parseInt(ans.itemsInStock)
+                },
+                function (error, response) {
+                    if (error) throw error;
+                    viewProducts();
+                })
+        }).catch(function (error) {
+            console.log(error);
+        })
 }
+
+
 
 // run Inquirer to select a task:
 function selectTask() {
