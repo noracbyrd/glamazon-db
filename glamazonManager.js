@@ -119,7 +119,8 @@ function addProduct() {
                     product_name: ans.newItem,
                     department_name: ans.itemDept,
                     price: parseFloat(ans.itemPrice),
-                    stock_quantity: parseInt(ans.itemsInStock)
+                    stock_quantity: parseInt(ans.itemsInStock),
+                    product_sales: 0.00
                 },
                 function (error, response) {
                     if (error) throw error;
