@@ -1,6 +1,7 @@
 // requiring npm packages
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+const table = require("table");
 
 // establishing a connection to the database
 var connection = mysql.createConnection({
@@ -19,18 +20,25 @@ var connection = mysql.createConnection({
 
 // function to display the items available for purchase:
 function displayStore() {
+
+
   connection.query("SELECT * FROM products", function (error, response) {
     if (error) throw error;
     // displaying everything all nice and friendly like
+
+
     console.log("GLAMAZON PRODUCTS");
     for (var i = 0; i < response.length; i++) {
       console.log(`ID: ${response[i].item_id} \t Product Name: ${response[i].product_name}; Price: $${response[i].price}`);
+
+
     }
+
   })
 }
 
-function updateSales(id,price,boughtNum){
-  connection.query(`UPDATE products SET product_sales = product_sales + ${price*boughtNum} WHERE item_id=?`,[id],function(error,res){
+function updateSales(id, price, boughtNum) {
+  connection.query(`UPDATE products SET product_sales = product_sales + ${price * boughtNum} WHERE item_id=?`, [id], function (error, res) {
     if (error) throw error;
   })
   connection.end();
@@ -42,7 +50,7 @@ function displayPrice(id, boughtNum) {
   connection.query("SELECT * FROM products WHERE item_id=?", [id], function (error, response) {
     if (error) throw error;
     console.log(`You spent $${response[0].price * boughtNum}!`);
-    updateSales(id,response[0].price,boughtNum);
+    updateSales(id, response[0].price, boughtNum);
   })
 }
 
@@ -93,13 +101,25 @@ function customerBuys() {
     .prompt([
       {
         name: "selectID",
-        message: "Please enter the ID number of the product you'd like to buy."
-        // need to validate that they entered a number, ugh
+        message: "Please enter the ID number of the product you'd like to buy.",
+        validate: function (value) {
+          if (isNaN(value) === false) {
+            return true;
+          } else {
+            return false;
+          }
+        }
       },
       {
         name: "howMany",
-        message: "How many would you like to purchase?"
-        // again, need to validate that they entered a number
+        message: "How many would you like to purchase?",
+        validate: function (value) {
+          if (isNaN(value) === false) {
+            return true;
+          } else {
+            return false;
+          }
+        }
       }
     ]).then(function (ans) {
       connection.query("SELECT * FROM products WHERE item_id=?", [parseInt(ans.selectID)], function (error, res) {
