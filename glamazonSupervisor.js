@@ -22,9 +22,33 @@ function viewSales(){
     //join shit
 }
 
-// don't forget to end connection!
+// don't forget to test this!!!
 function createDept(){
     //insert shit
+    inquirer
+    .prompt([
+        {
+            message: "What department would you like to add?",
+            name: "newDept"
+        },
+        {
+            message: "What are the department's overhead costs?",
+            name: "deptCosts"
+            // need validation
+        },
+    ]).then(function (ans) {
+        connection.query("INSERT INTO departments SET ?",
+            {
+                department_name: ans.newDept,
+                over_head_costs: parseFloat(ans.deptCosts)
+            },
+            function (error, response) {
+                if (error) throw error;
+                viewSales();
+            })
+    }).catch(function (error) {
+        console.log(error);
+    })
 }
 
 inquirer
