@@ -17,12 +17,7 @@ var connection = mysql.createConnection({
     database: "glamazon"
 });
 
-function currentStock(id){
-connection.query("SELECT * FROM products WHERE item_id=?", [id], function(error,res){
-    if (error) throw error;
-    return res[0].stock_quantity;
-})
-}
+
 
 // function to view all products:
 function viewProducts() {
@@ -72,15 +67,7 @@ function addInventory() {
                 // validation, ugh
             }
         ]).then(function (ans) {
-            connection.query("UPDATE products SET ? WHERE ?",
-            [
-                {
-                    stock_quantity: (currentStock(parseInt(ans.itemID))+parseInt(ans.howMany))
-                },
-                {
-                    item_id: parseInt(ans.itemID) 
-                }
-            ],
+            connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${parseInt(ans.howMany)} WHERE item_id=?`, [parseInt(ans.itemID)],
                 function(error,res){
                 if (error) throw error;
                     console.log("Stock added!");
@@ -102,6 +89,7 @@ function addProduct() {
             {
                 message: "In what department should the product be placed?",
                 name: "itemDept"
+                // need a way to validate if the department exists
             },
             {
                 message: "How much does the item cost?",
