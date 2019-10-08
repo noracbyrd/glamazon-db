@@ -20,6 +20,12 @@ var connection = mysql.createConnection({
 // don't forget to end connection!
 function viewSales(){
     //join shit
+    connection.query("SELECT departments.department_id,departments.department_name,SUM(departments.over_head_costs),SUM(products.product_sales),(SUM(products.product_sales)-SUM(departments.over_head_costs)) as total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id",function(err,response){
+        if (err) throw err;
+        // need to somehow display this nicely
+        console.log(response);
+    })
+    connection.end();
 }
 
 // don't forget to test this!!!
@@ -52,7 +58,7 @@ function createDept(){
 }
 
 inquirer
-    prompt([
+    .prompt([
         {
             message: "Select a task",
             type: "list",
