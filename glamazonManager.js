@@ -17,6 +17,13 @@ var connection = mysql.createConnection({
     database: "glamazon"
 });
 
+function currentStock(id){
+connection.query("SELECT * FROM products WHERE item_id=?", [id], function(error,res){
+    if (error) throw error;
+    return res[0].stock_quantity;
+})
+}
+
 // function to view all products:
 function viewProducts() {
     connection.query("SELECT * FROM products", function (error, response) {
@@ -50,7 +57,7 @@ function viewLow() {
 }
 
 
-//don't forget to close connection!
+
 function addInventory() {
     inquirer
         .prompt([
@@ -68,7 +75,7 @@ function addInventory() {
             connection.query("UPDATE products SET ? WHERE ?",
             [
                 {
-                    stock_quantity: parseInt(ans.howMany)
+                    stock_quantity: (currentStock(parseInt(ans.itemID))+parseInt(ans.howMany))
                 },
                 {
                     item_id: parseInt(ans.itemID) 
