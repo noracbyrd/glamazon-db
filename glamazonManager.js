@@ -51,6 +51,19 @@ function viewLow() {
     connection.end();
 }
 
+var getDeptOptions = function() {
+    connection.query("SELECT department_name FROM products GROUP BY department_name", function (error, response){
+        if (error) throw error;
+        let options = [];
+        for (var i = 0; i< response.length; i++){
+            options.push(response[i].department_name);
+        }
+        console.log(options);
+        return options;
+    })
+}
+
+
 
 
 function addInventory() {
@@ -58,48 +71,82 @@ function addInventory() {
         .prompt([
             {
                 message: "What is the ID of the item you'd like to add inventory to?",
-                name: "itemID"
-                // validation, eurgh
+                name: "itemID",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             },
             {
                 message: "How many would you like to add?",
-                name: "howMany"
-                // validation, ugh
+                name: "howMany",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             }
         ]).then(function (ans) {
             connection.query(`UPDATE products SET stock_quantity = stock_quantity + ${parseInt(ans.howMany)} WHERE item_id=?`, [parseInt(ans.itemID)],
-                function(error,res){
-                if (error) throw error;
+                function (error, res) {
+                    if (error) throw error;
                     console.log("Stock added!");
-            }) 
+                })
             viewProducts();
-        }).catch(function(error){
+        }).catch(function (error) {
             console.log(error);
-         })
+        })
 }
 
 
 function addProduct() {
+    // var deptOptions = getDeptOptions();
     inquirer
         .prompt([
             {
                 message: "What item would you like to add?",
-                name: "newItem"
+                name: "newItem",
+                validate: function (value) {
+                    if (isNaN(value) === true) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             },
             {
                 message: "In what department should the product be placed?",
-                name: "itemDept"
+                name: "itemDept",
+                // type: "list",
+                // choices: `${deptOptions}`
                 // need a way to validate if the department exists
             },
             {
                 message: "How much does the item cost?",
-                name: "itemPrice"
-                // need a bloody validation
+                name: "itemPrice",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             },
             {
                 message: "How many of this item are in stock?",
-                name: "itemsInStock"
-                // need bloody validation
+                name: "itemsInStock",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             }
         ]).then(function (ans) {
             connection.query("INSERT INTO products SET ?",
