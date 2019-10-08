@@ -19,7 +19,6 @@ var connection = mysql.createConnection({
 
 
 function viewSales(){
-    //join shit
     connection.query("SELECT departments.department_id,departments.department_name,SUM(departments.over_head_costs),SUM(products.product_sales),(SUM(products.product_sales)-SUM(departments.over_head_costs)) as total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id",function(err,response){
         if (err) throw err;
         // need to somehow display this nicely
@@ -30,17 +29,29 @@ function viewSales(){
 
 
 function createDept(){
-    //insert shit
     inquirer
     .prompt([
         {
             message: "What department would you like to add?",
-            name: "newDept"
+            name: "newDept",
+            validate: function (value) {
+                if (isNaN(value) === true) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         },
         {
             message: "What are the department's overhead costs?",
-            name: "deptCosts"
-            // need validation
+            name: "deptCosts",
+            validate: function (value) {
+                if (isNaN(value) === false) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         },
     ]).then(function (ans) {
         connection.query("INSERT INTO departments SET ?",
