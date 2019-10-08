@@ -1,6 +1,8 @@
+function manager() {
 // requiring npm packages
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+var Table = require('cli-table');
 
 // establishing a connection to the database
 var connection = mysql.createConnection({
@@ -25,9 +27,17 @@ function viewProducts() {
         if (error) throw error;
         // displaying everything all nice and friendly like
         console.log("GLAMAZON PRODUCTS");
+        var table = new Table({
+            head: ["Item ID","Product Name","Price","# in Stock"],
+            colWidths: [10,50,10,15]
+          });
         for (var i = 0; i < response.length; i++) {
-            console.log(`ID: ${response[i].item_id} \t Product Name: ${response[i].product_name}; Price: $${response[i].price} \t In Stock: ${response[i].stock_quantity}`);
+
+            table.push(
+                [response[i].item_id,response[i].product_name,`$${response[i].price}`,response[i].stock_quantity]
+            )
         }
+        console.log(table.toString());
     })
     connection.end();
 }
@@ -37,13 +47,20 @@ function viewLow() {
     connection.query("SELECT * FROM products", function (error, response) {
         if (error) throw error;
         console.log("LOW INVENTORY");
+        var table = new Table({
+            head: ["Item ID","Product Name","Price","# in Stock"],
+            colWidths: [10,50,10,15]
+          });
         var tracker = 0;
         for (var i = 0; i < response.length; i++) {
             if (response[i].stock_quantity < 5) {
-                console.log(`ID: ${response[i].item_id} \t Product Name: ${response[i].product_name}; Price: $${response[i].price} \t In Stock: ${response[i].stock_quantity}`);
+                table.push(
+                    [response[i].item_id,response[i].product_name,`$${response[i].price}`,response[i].stock_quantity]
+                )
                 tracker++;
             }
         }
+        console.log(table.toString());
         if (tracker === 0) {
             console.log("No low inventory!");
         }
@@ -52,7 +69,7 @@ function viewLow() {
 }
 
 var getDeptOptions = function() {
-    connection.query("SELECT department_name FROM products GROUP BY department_name", function (error, response){
+    connection.query("SELECT department_name FROM departments GROUP BY department_name", function (error, response){
         if (error) throw error;
         let options = [];
         for (var i = 0; i< response.length; i++){
@@ -105,7 +122,7 @@ function addInventory() {
 
 
 function addProduct() {
-    // var deptOptions = getDeptOptions();
+    var deptOptions = getDeptOptions();
     inquirer
         .prompt([
             {
@@ -205,3 +222,5 @@ connection.connect(function (err) {
     // call selectTask to kick off the program
     selectTask();
 });
+}
+module.exports = manager;

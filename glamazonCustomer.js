@@ -1,3 +1,4 @@
+function customer(){
 // requiring npm packages
 const inquirer = require("inquirer");
 const mysql = require("mysql");
@@ -39,9 +40,6 @@ function displayStore() {
       table.push(
         [response[i].item_id,response[i].product_name,`$${response[i].price}`]
       )
-
-
-
     }
     console.log(table.toString());
   })
@@ -166,4 +164,5 @@ connection.connect(function (err) {
 });
 
 // portfolio link: https://noracbyrd.github.io/Bootstrap_Portfolio/
-
+}
+module.exports = customer;
