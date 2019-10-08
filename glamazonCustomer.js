@@ -1,7 +1,7 @@
 // requiring npm packages
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-const table = require("table");
+var Table = require('cli-table');
 
 // establishing a connection to the database
 var connection = mysql.createConnection({
@@ -18,6 +18,8 @@ var connection = mysql.createConnection({
   database: "glamazon"
 });
 
+
+
 // function to display the items available for purchase:
 function displayStore() {
 
@@ -25,17 +27,30 @@ function displayStore() {
   connection.query("SELECT * FROM products", function (error, response) {
     if (error) throw error;
     // displaying everything all nice and friendly like
-
-
     console.log("GLAMAZON PRODUCTS");
+    var table = new Table({
+      head: ["Item ID","Product Name","Price"],
+      colWidths: [10,50,10]
+    });
+
+    
+
     for (var i = 0; i < response.length; i++) {
-      console.log(`ID: ${response[i].item_id} \t Product Name: ${response[i].product_name}; Price: $${response[i].price}`);
+      table.push(
+        [response[i].item_id,response[i].product_name,`$${response[i].price}`]
+      )
+
 
 
     }
-
+    console.log(table.toString());
   })
 }
+
+
+
+
+
 
 function updateSales(id, price, boughtNum) {
   connection.query(`UPDATE products SET product_sales = product_sales + ${price * boughtNum} WHERE item_id=?`, [id], function (error, res) {
