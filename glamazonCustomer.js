@@ -29,14 +29,21 @@ function displayStore() {
   })
 }
 
+function updateSales(id,price,boughtNum){
+  connection.query(`UPDATE products SET product_sales = product_sales + ${price*boughtNum} WHERE item_id=?`,[id],function(error,res){
+    if (error) throw error;
+  })
+  connection.end();
+}
+
 // function to display how much the user spent (to be called only after a purchase goes through):
 // accepts two arguments: the item's unique id (id) and the number of that item purchased (boughtNum)
 function displayPrice(id, boughtNum) {
   connection.query("SELECT * FROM products WHERE item_id=?", [id], function (error, response) {
     if (error) throw error;
     console.log(`You spent $${response[0].price * boughtNum}!`);
+    updateSales(id,response[0].price,boughtNum);
   })
-  connection.end();
 }
 
 // function to update the stock after the user successfully purshases items:
