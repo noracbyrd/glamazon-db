@@ -1,3 +1,4 @@
+
 CREATE DATABASE glamazon;
 USE glamazon;
 

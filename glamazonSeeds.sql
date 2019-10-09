@@ -1,3 +1,4 @@
+USE glamazon;
 INSERT INTO products (product_name,department_name,price,stock_quantity,product_sales)
 VALUES ("Enchanted","Movies",19.99,50,99.95),
         ("The Sound of Music","Movies",19.99,52,99.95),
