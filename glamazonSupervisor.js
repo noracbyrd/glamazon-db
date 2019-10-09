@@ -33,6 +33,7 @@ function supervisor() {
             }
             console.log(table.toString());
             connection.end();
+            supervisor();
         })
     }
 
@@ -83,7 +84,7 @@ function supervisor() {
             {
                 message: "Select a task",
                 type: "list",
-                choices: ["View Product Sales by Department", "Create New Department"],
+                choices: ["View Product Sales by Department", "Create New Department","Exit"],
                 name: "task"
             }
         ]).then(function (ans) {
@@ -93,6 +94,10 @@ function supervisor() {
                     break;
                 case "Create New Department":
                     createDept();
+                    break;
+                case "Exit":
+                    console.log("Have a nice day!");
+                    connection.end();
                     break;
             }
         }).catch(function (err) {
