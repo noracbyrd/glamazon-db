@@ -45,9 +45,10 @@ Demo:
 https://drive.google.com/file/d/1p553iLNOsnA2SMbt6KJlkO6woOJz17Ce/view
 
 ### Last Stock Purchased
-If the customer purchases the last of the stock, the item will automatically be deleted from the database.
+If the customer purchases the last of the stock of an item, the item will automatically be deleted from the database.
 
 Demo:
+https://drive.google.com/file/d/1WcEheyxjhuj99poznA5lvRj_dWx571dl/view
 
 ## 2. Manager
 The Manager position has more options and viewing ability than the Customer position. The user is presented with four tasks: View Products, Low Inventory, Add Inventory, and Add Product.

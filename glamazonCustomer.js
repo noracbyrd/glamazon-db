@@ -49,7 +49,6 @@ function customer() {
   // function to display how much the user spent (to be called only after a purchase goes through):
   // accepts three arguments: the item's unique id (id) and the number of that item purchased (boughtNum) and the legacy quantity
   function displayPrice(id,boughtNum,quantity) {
-    console.log(quantity);
     connection.query("SELECT * FROM products WHERE item_id=?", [id], function (error, response) {
       if (error) throw error;
       console.log(`You spent $${response[0].price * boughtNum}! Thank you and please come again!`);
@@ -61,11 +60,6 @@ function customer() {
   // function to update the stock after the user successfully purshases items:
   // accepts three arguments: the number of items currently in stock (quantity), the item's unique id (id), and the number of that item purchased (boughtNum)
   function updateStock(quantity, id, boughtNum) {
-    // if (quantity === 0) {
-    //   // if the item is out of stock, we'll skip updating the stock since the item's going to be deleted
-    //   displayPrice(id,boughtNum,quantity);
-    // }
-    // else {
       // query to update the stock with the new total number (which is actually calculated in the customerBuys function below)
       connection.query("UPDATE products SET ? WHERE ?",
         [
