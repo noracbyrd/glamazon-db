@@ -21,21 +21,23 @@ var connection = mysql.createConnection({
 
 
 function viewSales() {
-    connection.query("SELECT departments.department_id,departments.department_name,SUM(departments.over_head_costs),SUM(products.product_sales),(SUM(products.product_sales)-SUM(departments.over_head_costs)) as total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id", function (err, response) {
+    connection.query("SELECT departments.department_id,departments.department_name,SUM(departments.over_head_costs) AS total_costs,SUM(products.product_sales) AS total_sales,(SUM(products.product_sales)-SUM(departments.over_head_costs)) AS total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id", function (err, response) {
         if (err) throw err;
         // need to somehow display this nicely
-        console.log(response);
+     
         console.log("GLAMAZON DEPARTMENT REPORT");
         var table = new Table({
             head: ["Dept ID", "Dept Name", "Overhead Costs","Product Sales","Total Profit"],
-            colWidths: [10,30,10,10,10]
+            colWidths: [10,20,20,15,15]
         })
         for (var i = 0; i < response.length; i++) {
             table.push(
-            //   [response[i].department_id,response[i].department_name,`$${response[i].SUM(departments.over_head_costs)}`,`$${response[i].SUM(products.product_sales)}`,`$${response[i].total_profit}`]
-                      [response[i].department_id,response[i].department_name,3,4,`$${response[i].total_profit}`]
 
+                      [response[i].department_id,response[i].department_name,`$${response[i].total_costs}`,`$${response[i].total_sales}`,`$${response[i].total_profit}`]
+                
             )
+          
+            console.log(response[i]);
           }
           console.log(table.toString());
         connection.end();
