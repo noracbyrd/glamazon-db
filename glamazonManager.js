@@ -33,6 +33,7 @@ function manager() {
             console.log(table.toString());
         })
         connection.end();
+        manager();
     }
 
     // function to view all products whose stock is under 5: 
@@ -61,6 +62,7 @@ function manager() {
             }
         })
         connection.end();
+        manager();
     }
 
     // so this function here generates an array of the current existing departments. I was hoping to use it in the inquirer below for adding an item - I wanted to generate a list of choices dynamically of the current departments. Unfortunatly whatever the underlying code in inquirer is, it didn't like my array function, *sniff*. Leaving it here in case I have a brainwave later of how to incorporate it.
@@ -191,7 +193,7 @@ function manager() {
                 {
                     type: "list",
                     message: "Select a task:",
-                    choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"],
+                    choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product", "Exit"],
                     name: "task"
                 }
             ]).then(function (ans) {
@@ -208,6 +210,10 @@ function manager() {
                     case "Add New Product":
                         addProduct();
                         break;
+                    case "Exit":
+                        console.log("Have a nice day!");
+                        connection.end();
+                        break;    
                 }
             }).catch(function (err) {
                 console.log(err);
