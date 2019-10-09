@@ -47,7 +47,7 @@ function customer() {
   function displayPrice(id, boughtNum) {
     connection.query("SELECT * FROM products WHERE item_id=?", [id], function (error, response) {
       if (error) throw error;
-      console.log(`You spent $${response[0].price * boughtNum}!`);
+      console.log(`You spent $${response[0].price * boughtNum}! Thank you and please come again!`);
       // calling the updateSales function to make sure the product sales number is updated in the db
       updateSales(id, response[0].price, boughtNum);
     })
@@ -132,6 +132,7 @@ function customer() {
           } else {
             console.log(`We're sorry, there is not enough of ${res[0].product_name} in stock to purchase that many.`);
             connection.end();
+            customer();
           }
         });
       }).catch(function (err) {
