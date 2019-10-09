@@ -35,32 +35,37 @@ function customer() {
   }
 
   // function to update the product sales column when items are purchased:
-  function updateSales(id, price, boughtNum) {
+  function updateSales(id, price, boughtNum,quantity) {
+    if (quantity===0){
+      removeProduct(id,boughtNum);
+    } else{
     connection.query(`UPDATE products SET product_sales = product_sales + ${price * boughtNum} WHERE item_id=?`, [id], function (error, res) {
       if (error) throw error;
     })
     connection.end();
   }
+  }
 
   // function to display how much the user spent (to be called only after a purchase goes through):
-  // accepts two arguments: the item's unique id (id) and the number of that item purchased (boughtNum)
-  function displayPrice(id, boughtNum) {
+  // accepts three arguments: the item's unique id (id) and the number of that item purchased (boughtNum) and the legacy quantity
+  function displayPrice(id,boughtNum,quantity) {
+    console.log(quantity);
     connection.query("SELECT * FROM products WHERE item_id=?", [id], function (error, response) {
       if (error) throw error;
       console.log(`You spent $${response[0].price * boughtNum}! Thank you and please come again!`);
       // calling the updateSales function to make sure the product sales number is updated in the db
-      updateSales(id, response[0].price, boughtNum);
+      updateSales(id, response[0].price, boughtNum, quantity);
     })
   }
 
   // function to update the stock after the user successfully purshases items:
   // accepts three arguments: the number of items currently in stock (quantity), the item's unique id (id), and the number of that item purchased (boughtNum)
   function updateStock(quantity, id, boughtNum) {
-    if (quantity === 0) {
-      // if the item is out of stock, call the removeProduct function to delete the listing
-      removeProduct(id);
-    }
-    else {
+    // if (quantity === 0) {
+    //   // if the item is out of stock, we'll skip updating the stock since the item's going to be deleted
+    //   displayPrice(id,boughtNum,quantity);
+    // }
+    // else {
       // query to update the stock with the new total number (which is actually calculated in the customerBuys function below)
       connection.query("UPDATE products SET ? WHERE ?",
         [
@@ -74,21 +79,19 @@ function customer() {
         function (err, res) {
           if (err) throw err;
           // calls the display cost function to show the user how much they spent
-          displayPrice(id, boughtNum);
+          displayPrice(id,boughtNum,quantity);
         }
       );
     }
-  }
+  
 
   // function to delete an item that is out of stock:
   // takes one argument, the item id
   function removeProduct(id) {
-    console.log(id);
     connection.query(
       "DELETE FROM products WHERE item_id=?", [id], function (err, res) {
         if (err) throw err;
         // show the updated contents of the store
-        displayStore();
       }
     );
     connection.end();
