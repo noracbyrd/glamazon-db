@@ -1,9 +1,3 @@
-# glamazon-db
-baby's first database
-
-Project link:
-https://github.com/noracbyrd/glamazon-db
-
 # Glamazon
 
 ## Overview
